@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Unit Knife">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#e9ebee">
+<link rel="apple-touch-icon" id="icon" href="">
+<title>Unit Knife</title>
+<style>
+:root{--bg:#e9ebee;--card:#fff;--ink:#17181a;--mute:#6b7078;--line:#d5d8dd;--chip:#dde0e5;--red:#d71920;--onred:#fff;--field:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#121315;--card:#1c1d20;--ink:#f1f2f4;--mute:#9298a1;--line:#2e3035;--chip:#26282c;--red:#e0262c;--field:#26282c}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.35 -apple-system,"SF Pro Text",system-ui,sans-serif;font-variant-numeric:tabular-nums;padding:env(safe-area-inset-top,0px) 0 calc(env(safe-area-inset-bottom,0px) + 24px)}
+header{display:flex;align-items:center;gap:10px;padding:14px 16px 6px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--red);position:relative;flex:none}
+.logo:before,.logo:after{content:"";position:absolute;background:#fff;border-radius:1px}
+.logo:before{left:13px;top:6px;width:4px;height:18px}.logo:after{left:6px;top:13px;width:18px;height:4px}
+h1{font-size:22px;margin:0;font-weight:800;letter-spacing:-.02em}
+nav{display:flex;gap:8px;overflow-x:auto;padding:8px 16px 10px;scrollbar-width:none;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:2}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:none;border:0;background:var(--chip);color:var(--ink);font:600 15px inherit;font-family:inherit;padding:9px 14px;border-radius:999px}
+nav button.on{background:var(--ink);color:var(--bg)}
+main{padding:4px 16px;max-width:560px;margin:0 auto}
+.card{background:var(--card);border-radius:18px;padding:14px;margin-bottom:10px;border:1px solid var(--line)}
+.card>label,.sub{display:block;font-size:13px;color:var(--mute);margin-bottom:6px}
+.row{display:flex;gap:8px;align-items:center}
+input,select{font:600 20px inherit;font-family:inherit;color:var(--ink);background:var(--field);border:1px solid transparent;border-radius:12px;padding:12px;min-width:0}
+input{flex:1;width:100%}select{flex:none;max-width:48%;font-size:16px;padding:12px 8px}
+input:focus,select:focus{outline:2px solid var(--red);outline-offset:1px}
+.mini{flex:none;border:0;background:var(--chip);color:var(--ink);font:700 18px inherit;font-family:inherit;width:44px;height:46px;border-radius:12px}
+#swap{display:block;margin:-4px auto 6px;width:52px;height:38px;border-radius:19px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;position:relative;z-index:1}
+.card.out{background:var(--red);color:var(--onred);border-color:var(--red)}
+.card.out label,.card.out .sub{color:rgba(255,255,255,.8)}
+.card.out select{background:rgba(0,0,0,.2);color:#fff}
+.big{flex:1;font-size:34px;font-weight:800;letter-spacing:-.02em;overflow-wrap:anywhere;line-height:1.1;min-height:40px}
+.note{font-size:13px;margin-top:10px;opacity:.9}
+h2{font-size:15px;margin:18px 4px 8px;color:var(--mute);font-weight:600}
+.list{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.item{display:flex;justify-content:space-between;gap:10px;width:100%;border:0;background:none;color:var(--ink);font:inherit;text-align:left;padding:12px 14px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}.item.hl{background:var(--field)}
+.item span:first-child{color:var(--mute)}.item span:last-child{font-weight:700;text-align:right;overflow-wrap:anywhere}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;border:0;background:none;color:var(--ink);font:600 15px inherit;font-family:inherit;padding:9px;border-radius:9px}
+.seg button.on{background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chips button{border:0;background:var(--chip);color:var(--ink);font:600 15px inherit;font-family:inherit;padding:8px 13px;border-radius:999px}
+.chips button.on{background:var(--ink);color:var(--bg)}
+.frac3{display:flex;gap:8px;align-items:center}.frac3 input{text-align:center;padding:12px 4px}.frac3 b{font-size:28px;color:var(--mute)}
+.card.out .big.sm{font-size:30px}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:.2s}
+#toast.show{opacity:1;transform:translateX(-50%)}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<header><div class="logo"></div><h1>Unit Knife</h1></header>
+<nav id="tabs"></nav>
+<main id="app"></main>
+<div id="toast"></div>
+<script>
+// Units: [symbol, name, factor-to-base | [toBase, fromBase], group]
+const C={
+length:{n:'Length',u:[['mm','Millimeters',.001],['cm','Centimeters',.01],['m','Meters',1],['km','Kilometers',1000],['in','Inches',.0254],['ft','Feet',.3048],['yd','Yards',.9144],['mi','Miles',1609.344],['nmi','Nautical miles',1852]],d:['ft','m']},
+weight:{n:'Weight',u:[
+ ['mg','Milligrams',.001,'Metric'],['g','Grams',1,'Metric'],['kg','Kilograms',1000,'Metric'],['t','Metric tons',1e6,'Metric'],
+ ['oz','Ounces (avoirdupois)',28.349523125,'Everyday metals and goods (avoirdupois)'],['lb','Pounds',453.59237,'Everyday metals and goods (avoirdupois)'],['st','Stone',6350.29318,'Everyday metals and goods (avoirdupois)'],
+ ['ozt','Troy ounces',31.1034768,'Precious metals (troy)'],['dwt','Pennyweights',1.55517384,'Precious metals (troy)'],['gr','Grains',.06479891,'Precious metals (troy)'],['lbt','Troy pounds',373.2417216,'Precious metals (troy)'],['tola','Tola',11.6638038,'Precious metals (troy)']],d:['ozt','g'],
+ note:'Troy oz (gold, silver, platinum) = 31.1035 g. Avoirdupois oz (steel, copper, everyday) = 28.3495 g.'},
+volume:{n:'Volume',u:[['mL','Milliliters',.001],['L','Liters',1],['m³','Cubic meters',1000],['tsp','Teaspoons (US)',.00492892159375],['tbsp','Tablespoons (US)',.01478676478125],['fl oz','Fluid ounces (US)',.0295735295625],['cup','Cups (US)',.2365882365],['pt','Pints (US)',.473176473],['qt','Quarts (US)',.946352946],['gal','Gallons (US)',3.785411784],['gal UK','Gallons (UK)',4.54609],['in³','Cubic inches',.016387064],['ft³','Cubic feet',28.316846592]],d:['gal','L']},
+area:{n:'Area',u:[['cm²','Square cm',1e-4],['m²','Square meters',1],['ha','Hectares',1e4],['km²','Square km',1e6],['in²','Square inches',6.4516e-4],['ft²','Square feet',.09290304],['yd²','Square yards',.83612736],['ac','Acres',4046.8564224],['mi²','Square miles',2589988.110336]],d:['ac','m²']},
+temp:{n:'Temperature',u:[['°C','Celsius',[v=>v,b=>b]],['°F','Fahrenheit',[v=>(v-32)*5/9,b=>b*9/5+32]],['K','Kelvin',[v=>v-273.15,b=>b+273.15]]],d:['°F','°C']},
+speed:{n:'Speed',u:[['km/h','Kilometers/hour',1/3.6],['mph','Miles/hour',.44704],['m/s','Meters/second',1],['kn','Knots',1852/3600],['ft/s','Feet/second',.3048]],d:['mph','km/h']},
+pressure:{n:'Pressure',u:[['psi','Pounds/sq inch',6894.757293168],['bar','Bar',1e5],['kPa','Kilopascals',1000],['atm','Atmospheres',101325],['mmHg','Millimeters of mercury',133.322387415],['Pa','Pascals',1]],d:['psi','bar']},
+fuel:{n:'Fuel economy',u:[['L/100km','Liters per 100 km',[v=>v,b=>b]],['mpg','Miles/gallon (US)',[v=>235.214583/v,b=>235.214583/b]],['mpg UK','Miles/gallon (UK)',[v=>282.480936/v,b=>282.480936/b]],['km/L','Kilometers/liter',[v=>100/v,b=>100/b]]],d:['mpg','L/100km']},
+time:{n:'Time',u:[['ms','Milliseconds',.001],['s','Seconds',1],['min','Minutes',60],['h','Hours',3600],['day','Days',86400],['wk','Weeks',604800],['yr','Years (365.25 d)',31557600]],d:['h','min']},
+data:{n:'Data',u:[['B','Bytes',1],['KB','Kilobytes',1e3],['MB','Megabytes',1e6],['GB','Gigabytes',1e9],['TB','Terabytes',1e12],['KiB','Kibibytes',1024],['MiB','Mebibytes',1048576],['GiB','Gibibytes',1073741824]],d:['GB','MB']}
+};
+const ORDER=['length','weight','fraction','volume','temp','area','speed','pressure','fuel','time','data'];
+const LABEL={fraction:'Fractions'};
+const $=s=>document.querySelector(s);
+const app=$('#app'),tabs=$('#tabs');
+let S={cat:'length',val:'1',sel:{},fmode:'dec',fd:'auto',fv:'0.375',fw:'1',fn:'1',fdn:'4'};
+try{Object.assign(S,JSON.parse(localStorage.getItem('unitknife')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('unitknife',JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/"/g,'&quot;');
+const idx=(c,sym)=>Math.max(0,C[c].u.findIndex(x=>x[0]===sym));
+const sel=c=>S.sel[c]||(S.sel[c]=[idx(c,C[c].d[0]),idx(c,C[c].d[1])]);
+
+const toB=(u,v)=>Array.isArray(u[2])?u[2][0](v):v*u[2];
+const fromB=(u,b)=>Array.isArray(u[2])?u[2][1](b):b/u[2];
+const fmt=x=>{if(!isFinite(x))return '—';if(x===0)return '0';const a=Math.abs(x);
+ if(a>=1e15||a<1e-9)return x.toExponential(6).replace(/\.?0+e/,'e');
+ return Number(x.toPrecision(10)).toLocaleString('en-US',{maximumFractionDigits:12})};
+const raw=x=>isFinite(x)?String(Number(x.toPrecision(10))):'';
+const num=s=>{const n=parseFloat(String(s).replace(/,/g,''));return isNaN(n)?null:n};
+
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1200)}
+function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copied '+t),()=>toast('Copy not allowed'))}catch(e){toast('Copy not allowed')}}
+
+function drawTabs(){tabs.innerHTML=ORDER.map(k=>`<button data-k="${k}" class="${k===S.cat?'on':''}">${LABEL[k]||C[k].n}</button>`).join('');
+ tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{S.cat=b.dataset.k;save();drawTabs();draw();window.scrollTo(0,0)})}
+
+function opts(c,i){const u=C[c].u;const o=(x,j)=>`<option value="${j}" ${j===i?'selected':''}>${x[0]} · ${x[1]}</option>`;
+ if(!u[0][3])return u.map(o).join('');
+ const g=[...new Set(u.map(x=>x[3]))];
+ return g.map(n=>`<optgroup label="${n}">${u.map((x,j)=>x[3]===n?o(x,j):'').join('')}</optgroup>`).join('')}
+
+function drawConv(){const c=C[S.cat],[fi,ti]=sel(S.cat);
+ app.innerHTML=`<div class="card"><label>From</label><div class="row"><input id="val" inputmode="decimal" autocomplete="off" value="${esc(S.val)}" aria-label="Value"><button class="mini" id="neg" aria-label="Plus or minus">±</button><select id="fs" aria-label="From unit">${opts(S.cat,fi)}</select></div></div>
+ <button id="swap" aria-label="Swap units">⇅</button>
+ <div class="card out"><label>To</label><div class="row"><div class="big" id="res"></div><select id="ts" aria-label="To unit">${opts(S.cat,ti)}</select></div>${c.note?`<div class="note">${c.note}</div>`:''}</div>
+ <h2>Every ${c.n.toLowerCase()} unit at once</h2><div class="list" id="all"></div>`;
+ const v=$('#val');v.oninput=()=>{S.val=v.value;save();upd()};
+ $('#neg').onclick=()=>{S.val=S.val.startsWith('-')?S.val.slice(1):'-'+S.val;v.value=S.val;save();upd()};
+ $('#fs').onchange=e=>{sel(S.cat)[0]=+e.target.value;save();upd()};
+ $('#ts').onchange=e=>{sel(S.cat)[1]=+e.target.value;save();upd()};
+ $('#swap').onclick=()=>{const s=sel(S.cat);const r=num(S.val)!==null?convert(S.cat,num(S.val),s[0],s[1]):null;s.reverse();if(r!==null&&isFinite(r))S.val=raw(r);save();drawConv()};
+ upd()}
+function convert(cat,v,a,b){const u=C[cat].u;return fromB(u[b],toB(u[a],v))}
+function upd(){const c=C[S.cat],[fi,ti]=sel(S.cat),v=num(S.val);
+ $('#res').textContent=v===null?'—':fmt(convert(S.cat,v,fi,ti));
+ $('#all').innerHTML=c.u.map((u,j)=>{const r=v===null?'—':fmt(convert(S.cat,v,fi,j));return `<button class="item ${j===ti?'hl':''}" data-v="${v===null?'':raw(convert(S.cat,v,fi,j))}"><span>${u[1]}</span><span>${r} ${u[0]}</span></button>`}).join('');
+ $('#all').querySelectorAll('.item').forEach(b=>b.onclick=()=>b.dataset.v&&copy(b.dataset.v));
+ $('#res').onclick=()=>v!==null&&copy(raw(convert(S.cat,v,fi,ti)))}
+
+// Fractions
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+function toFrac(x,d){const neg=x<0,a=Math.abs(x);let w=Math.floor(a),f=a-w,n,den;
+ if(d==='auto'){let best=9,bd=1,bn=0;for(let k=1;k<=100;k++){const m=Math.round(f*k),e=Math.abs(f-m/k);if(e<best-1e-12){best=e;bd=k;bn=m}}n=bn;den=bd}else{den=+d;n=Math.round(f*den)}
+ if(n>=den){w+=Math.floor(n/den);n=n%den}
+ if(n){const g=gcd(n,den);n/=g;den/=g}else den=1;
+ const approx=w+(n?n/den:0);
+ return{neg,w,n,den,err:a-approx,txt:(neg&&(w||n)?'-':'')+(n?(w?w+' ':'')+n+'/'+den:String(w))}}
+
+function drawFrac(){
+ app.innerHTML=`<div class="seg"><button data-m="dec" class="${S.fmode==='dec'?'on':''}">Decimal to fraction</button><button data-m="fr" class="${S.fmode==='fr'?'on':''}">Fraction to decimal</button></div><div id="fbody"></div><h2>Inch fraction chart</h2><div class="list" id="chart"></div>`;
+ app.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{S.fmode=b.dataset.m;save();drawFrac()});
+ const body=$('#fbody');
+ if(S.fmode==='dec'){
+  body.innerHTML=`<div class="card"><label>Decimal</label><div class="row"><input id="fv" inputmode="decimal" autocomplete="off" value="${esc(S.fv)}" aria-label="Decimal"><button class="mini" id="neg" aria-label="Plus or minus">±</button></div><div class="chips" id="dens">${['auto',2,4,8,16,32,64].map(d=>`<button data-d="${d}" class="${String(S.fd)===String(d)?'on':''}">${d==='auto'?'Best fit':'to 1/'+d}</button>`).join('')}</div></div>
+  <div class="card out"><label>Fraction</label><div class="big" id="fres"></div><div class="note" id="fsub"></div></div>`;
+  $('#fv').oninput=e=>{S.fv=e.target.value;save();updF()};
+  $('#neg').onclick=()=>{S.fv=S.fv.startsWith('-')?S.fv.slice(1):'-'+S.fv;$('#fv').value=S.fv;save();updF()};
+  $('#dens').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.fd=b.dataset.d;save();drawFrac()});
+  updF()
+ }else{
+  body.innerHTML=`<div class="card"><label>Whole number, numerator, denominator</label><div class="frac3"><input id="fw" inputmode="numeric" value="${esc(S.fw)}" aria-label="Whole"><input id="fn" inputmode="numeric" value="${esc(S.fn)}" aria-label="Numerator"><b>/</b><input id="fdn" inputmode="numeric" value="${esc(S.fdn)}" aria-label="Denominator"></div></div>
+  <div class="card out"><label>Decimal</label><div class="big" id="fres"></div><div class="note" id="fsub"></div></div>`;
+  ['fw','fn','fdn'].forEach(k=>$('#'+k).oninput=e=>{S[k]=e.target.value;save();updF()});
+  updF()}
+ $('#chart').innerHTML=Array.from({length:16},(_,i)=>{const n=i+1,g=gcd(n,16),t=n===16?'1':(n/g)+'/'+(16/g),d=n/16;return `<button class="item" data-v="${d}"><span>${t} in</span><span>${d} in · ${(d*25.4).toFixed(2)} mm</span></button>`}).join('');
+ $('#chart').querySelectorAll('.item').forEach(b=>b.onclick=()=>copy(b.dataset.v))}
+
+function updF(){const r=$('#fres'),s=$('#fsub');
+ if(S.fmode==='dec'){const x=num(S.fv);if(x===null){r.textContent='—';s.textContent='';return}
+  const f=toFrac(x,S.fd);r.textContent=f.txt;
+  s.textContent=(Math.abs(f.err)<1e-9?'Exact. ':'Closest match, off by '+fmt(f.err)+'. ')+'As inches: '+fmt(x*25.4)+' mm.';
+  r.onclick=()=>copy(f.txt)
+ }else{const w=num(S.fw)||0,n=num(S.fn)||0,d=num(S.fdn);if(!d){r.textContent='—';s.textContent='Denominator can\u2019t be zero.';return}
+  const v=w+n/d;r.textContent=fmt(v);s.textContent='As inches: '+fmt(v*25.4)+' mm.';r.onclick=()=>copy(raw(v))}}
+
+function draw(){S.cat==='fraction'?drawFrac():drawConv()}
+if(!ORDER.includes(S.cat))S.cat='length';
+drawTabs();draw();
+
+// Home screen icon (drawn at runtime so this stays a single file)
+try{const c=document.createElement('canvas');c.width=c.height=180;const g=c.getContext('2d');g.fillStyle='#d71920';g.fillRect(0,0,180,180);g.fillStyle='#fff';g.fillRect(76,34,28,112);g.fillRect(34,76,112,28);$('#icon').href=c.toDataURL('image/png')}catch(e){}
+</script>
+</body>
+</html>
